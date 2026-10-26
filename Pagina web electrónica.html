@@ -1,0 +1,1667 @@
+<!doctype html>
+<!--
+  Página web electrónica
+  Laboratorio Interactivo de Sistemas de Numeración y Lógica Digital
+
+  Estructura del archivo:
+    1. HTML    (encabezado, pestañas y contenedor principal)
+    2. CSS     (bloque de estilos, dividido en 11 partes numeradas)
+    3. JS      (bloque de script, dividido en 5 secciones y la pantalla principal)
+
+  Todo está en un solo archivo para poder abrirlo con doble clic o enviarlo fácil.
+-->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Laboratorio Interactivo de Sistemas de Numeración y Lógica Digital</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+
+      /* ------ 1. COLORES (variables) · cambia aquí la paleta ------ */
+      :root {
+        --bg: #eef2f4;
+        --gr: #dbe3e8;
+        --pa: #fff;
+        --ink: #14213d;
+        --mu: #566174;
+        --ac: #0f766e;
+        --acb: #ccefe9;
+        --on: #c77700;
+        --off: #9aa5b4;
+        --ok: #15803d;
+        --bad: #b91c1c;
+        --ln: #c5d0d8;
+        color-scheme: light;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      /* ------ 2. BASE DE LA PÁGINA ------ */
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        background-image:
+          linear-gradient(var(--gr) 1px, transparent 1px),
+          linear-gradient(90deg, var(--gr) 1px, transparent 1px);
+        background-size: 26px 26px;
+        color: var(--ink);
+        font:
+          16px/1.55 "IBM Plex Sans",
+          system-ui,
+          sans-serif;
+      }
+
+      /* ------ 3. ENCABEZADO Y BITS ------ */
+      header {
+        padding: 28px 16px 12px;
+        max-width: 1040px;
+        margin: auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: clamp(1.5rem, 4vw, 2.3rem);
+        line-height: 1.15;
+        margin: 0;
+        max-width: 20ch;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 1.25rem;
+      }
+      h3 {
+        margin: 14px 0 6px;
+        font-size: 1rem;
+      }
+      .bits {
+        display: flex;
+        gap: 6px;
+      }
+      .rd {
+        margin: 8px 0 0;
+        color: var(--mu);
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .rd b {
+        color: var(--ink);
+        font-family: "IBM Plex Mono", monospace;
+      }
+      .bit {
+        width: 38px;
+        height: 48px;
+        font:
+          500 1.2rem "IBM Plex Mono",
+          monospace;
+        border: 2px solid var(--off);
+        background: var(--pa);
+        color: var(--off);
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .bit.on {
+        border-color: var(--on);
+        color: var(--on);
+        background: var(--pa);
+        box-shadow: 0 3px 0 var(--on);
+      }
+
+      /* ------ 4. NAVEGACIÓN Y CONTENEDOR PRINCIPAL ------ */
+      nav {
+        max-width: 1040px;
+        margin: auto;
+        padding: 0 16px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      main {
+        max-width: 1040px;
+        margin: 14px auto 40px;
+        padding: 0 16px;
+      }
+
+      /* ------ 5. BOTONES Y PÍLDORAS ------ */
+      button {
+        font: inherit;
+      }
+      .tab,
+      .pill {
+        border: 1.5px solid var(--ink);
+        background: transparent;
+        color: var(--ink);
+        padding: 8px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .tab.a,
+      .pill.a {
+        background: var(--ink);
+        color: var(--bg);
+      }
+      .pills {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin: 10px 0;
+      }
+      .pill {
+        padding: 5px 12px;
+        font-size: 0.92rem;
+        border-color: var(--ln);
+      }
+      .pill.a {
+        border-color: var(--ink);
+      }
+
+      /* ------ 6. TARJETAS Y CUADRÍCULA ------ */
+      .card {
+        background: var(--pa);
+        border: 1px solid var(--ln);
+        border-radius: 10px;
+        padding: 16px;
+        margin: 12px 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 12px;
+      }
+      .lbl {
+        color: var(--mu);
+        font-size: 0.9rem;
+      }
+
+      /* ------ 7. FORMULARIOS ------ */
+      .mono,
+      input,
+      table {
+        font-family: "IBM Plex Mono", monospace;
+      }
+      input {
+        font-size: 1.1rem;
+        padding: 8px 10px;
+        border: 1.5px solid var(--ink);
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--ink);
+        width: min(100%, 260px);
+        margin: 4px 8px 4px 0;
+        text-transform: uppercase;
+      }
+      .btn {
+        background: var(--ac);
+        color: #fff;
+        border: 0;
+        border-radius: 6px;
+        padding: 9px 14px;
+        cursor: pointer;
+        margin: 4px 6px 4px 0;
+      }
+      .btn.s {
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--ln);
+      }
+      :focus-visible {
+        outline: 3px solid var(--on);
+        outline-offset: 2px;
+      }
+
+      /* ------ 8. RETROALIMENTACIÓN Y TABLAS ------ */
+      .fb {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 6px;
+        border-left: 5px solid;
+      }
+      .fb.ok {
+        border-color: var(--ok);
+        background: var(--acb);
+      }
+      .fb.bad {
+        border-color: var(--bad);
+        background: var(--gr);
+      }
+      ol.st {
+        margin: 8px 0 0;
+        padding-left: 22px;
+        font-size: 0.95rem;
+      }
+      .tw {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td,
+      th {
+        border: 1px solid var(--ln);
+        padding: 5px 12px;
+        text-align: center;
+      }
+      tr.h td {
+        background: var(--acb);
+        font-weight: 600;
+      }
+
+      /* ------ 9. SIMULADOR DE PUERTAS LÓGICAS ------ */
+      .sw {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin: 6px 0;
+        flex-wrap: wrap;
+      }
+      .tg {
+        min-width: 74px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 2px solid var(--off);
+        background: var(--pa);
+        color: var(--off);
+        cursor: pointer;
+        font:
+          500 1rem "IBM Plex Mono",
+          monospace;
+      }
+      .tg.on {
+        border-color: var(--on);
+        color: var(--on);
+        box-shadow: 0 3px 0 var(--on);
+      }
+      svg .w {
+        stroke: var(--off);
+        stroke-width: 4;
+        fill: none;
+      }
+      svg .w.on {
+        stroke: var(--on);
+      }
+      svg .g {
+        stroke: var(--ink);
+        stroke-width: 3;
+        fill: var(--pa);
+      }
+      svg text {
+        fill: var(--ink);
+        font:
+          500 14px "IBM Plex Mono",
+          monospace;
+      }
+      .ex {
+        display: block;
+        margin: 5px 0;
+        font-size: 1.05rem;
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      /* ------ 10. ANIMACIONES ------ */
+      @media (prefers-reduced-motion: no-preference) {
+        .fb {
+          animation: f 0.25s;
+        }
+        @keyframes f {
+          from {
+            opacity: 0;
+          }
+        }
+      }
+
+      /* ------ 11. SELECTORES (módulo de electrónica) ------ */
+      select {
+        font: inherit;
+        padding: 6px;
+        border: 1.5px solid var(--ink);
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--ink);
+        margin: 4px 8px 4px 0;
+      }
+      label.lbl {
+        display: inline-block;
+        margin-right: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Encabezado -->
+    <header>
+      <div>
+        <h1>Laboratorio Interactivo de Sistemas de Numeración y Lógica Digital</h1>
+        <p class="lbl" style="margin: 6px 0 0">
+          Toca los bits y mira el mismo número en cuatro bases.
+        </p>
+      </div>
+      <div id="hero"></div>
+    </header>
+    <!-- Pestañas (se generan desde JavaScript) -->
+    <nav id="nav"></nav>
+    <!-- Contenido principal (se llena desde JavaScript) -->
+    <main id="app"></main>
+    <!-- JavaScript de la aplicación -->
+    <script>
+
+      /* ==========================================================
+         SECCIÓN 1 · UTILIDADES GENERALES
+         Funciones pequeñas que se usan en toda la página (aleatorios, formato, etc.).
+         ========================================================== */
+      const $ = (s) => document.querySelector(s),
+        R = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a,
+        S = (n, b) => n.toString(b).toUpperCase(),
+        N = (x) => 1 - x,
+        cap = (s) => s[0].toUpperCase() + s.slice(1),
+        sh = (a) => a.sort(() => Math.random() - 0.5);
+
+      /* ==========================================================
+         SECCIÓN 2 · SISTEMAS DE NUMERACIÓN Y ARITMÉTICA
+         Datos, teoría, ejercicios y vista de los 6 módulos de conversión.
+         ========================================================== */
+      const NM = { 2: "binario", 8: "octal", 10: "decimal", 16: "hexadecimal" },
+        DG = { 2: "0 y 1", 8: "0 a 7", 10: "0 a 9", 16: "0 a 9 y A a F" },
+        RX = { 2: "01", 8: "0-7", 10: "0-9", 16: "0-9A-F" };
+      const TH = {
+        2: "Usa solo 0 y 1. Cada posición vale una potencia de 2: …, 16, 8, 4, 2, 1.",
+        8: "Usa los dígitos 0 a 7. Cada posición vale una potencia de 8: …, 512, 64, 8, 1.",
+        10: "Usa los dígitos 0 a 9. Cada posición vale una potencia de 10: …, 1000, 100, 10, 1.",
+        16: "Usa 0 a 9 y letras: A = 10, B = 11, C = 12, D = 13, E = 14, F = 15. Cada posición vale una potencia de 16: …, 4096, 256, 16, 1.",
+      };
+      const MODS = [
+          [10, 2],
+          [2, 10],
+          [10, 8],
+          [8, 10],
+          [16, 10],
+          [10, 16],
+        ],
+        LV = ["Básico", "Intermedio", "Avanzado"];
+      const MODES = [
+          ["conv", "Conversión"],
+          ["add", "Suma"],
+          ["sub", "Resta"],
+          ["mul", "Multiplicación"],
+          ["div", "División"],
+        ],
+        SYM = { add: "+", sub: "−", mul: "×", div: "÷" };
+      const RULE = {
+        add: "Suma columna a columna, de derecha a izquierda. Si el total alcanza la base, escribes el excedente y llevas 1 (acarreo).",
+        sub: "Resta columna a columna. Si el dígito de arriba es menor, pides prestada una unidad de la columna vecina, que vale la base (préstamo).",
+        mul: "Multiplica el primer número por cada dígito del segundo, desplaza cada producto una posición más y suma los parciales.",
+        div: "División larga: baja cifras, divide el resto parcial entre el divisor y repite. Resultado: cociente entero y residuo. El divisor nunca puede ser 0.",
+      };
+      const EXA = { add: [11, 7], sub: [13, 6], mul: [6, 5], div: [29, 4] };
+
+      /* ==========================================================
+         ESTADO GLOBAL DE LA APLICACIÓN
+         Guarda la pestaña activa, el módulo, el nivel y el ejercicio actual.
+         ========================================================== */
+      let st = {
+          tab: "num",
+          m: 0,
+          mode: "conv",
+          lv: 0,
+          ob: null,
+          ex: null,
+          fb: "",
+          g: "AND",
+          A: 0,
+          B: 0,
+          px: null,
+          pf: "",
+          vt: "",
+          q: null,
+          qa: null,
+        },
+        bits = [0, 0, 0, 0, 1, 0, 1, 1];
+
+      /* ==========================================================
+         ENCABEZADO · BITS INTERACTIVOS
+         ========================================================== */
+      function hero() {
+        const v = parseInt(bits.join(""), 2);
+        $("#hero").innerHTML =
+          `<div class="bits">${bits.map((b, i) => `<button class="bit ${b ? "on" : ""}" onclick="bits[${i}]^=1;hero()" aria-label="Bit ${7 - i}: ${b}">${b}</button>`).join("")}</div><p class="rd"><span>Decimal <b>${v}</b></span><span>Octal <b>${S(v, 8)}</b></span><span>Hex <b>${S(v, 16)}</b></span></p>`;
+      }
+
+      /* ==========================================================
+         SECCIÓN 2 (cont.) · PASOS DE CONVERSIÓN Y OPERACIONES
+         cS = conversión, oS = suma, resta, multiplicación y división paso a paso.
+         ========================================================== */
+      function cS(n, f, t) {
+        if (f == 10) {
+          const L = [];
+          let q = n;
+          do {
+            const r = q % t;
+            L.push(
+              `${q} ÷ ${t} = ${Math.floor(q / t)}, residuo ${r}${t == 16 && r > 9 ? " → " + S(r, 16) : ""}`,
+            );
+            q = Math.floor(q / t);
+          } while (q > 0);
+          return L.concat(`Leo los residuos de abajo hacia arriba: <b>${S(n, t)}</b>`);
+        }
+        const d = S(n, f).split(""),
+          k = d.length;
+        return d
+          .map(
+            (c, i) =>
+              `${c}${f == 16 && parseInt(c, 16) > 9 ? " (=" + parseInt(c, 16) + ")" : ""} × ${f}<sup>${k - 1 - i}</sup> = ${parseInt(c, f) * f ** (k - 1 - i)}`,
+          )
+          .concat(`Sumo los valores: <b>${n}</b> (decimal)`);
+      }
+      function oS(op, a, b, B) {
+        const x = S(a, B).split("").reverse(),
+          y = S(b, B).split("").reverse(),
+          L = [];
+        if (B == 16 && op != "mul" && op != "div")
+          L.push("Valores de los dígitos en decimal (A=10 … F=15).");
+        if (op == "add" || op == "sub") {
+          let c = 0;
+          const n = Math.max(x.length, y.length);
+          for (let i = 0; i < n; i++) {
+            const p = parseInt(x[i] || "0", B),
+              q = parseInt(y[i] || "0", B);
+            if (op == "add") {
+              const t = p + q + c;
+              L.push(
+                `Columna ${i + 1}: ${p} + ${q}${c ? " + 1 (acarreo)" : ""} = ${t}${t >= B ? ` → ${B} + ${t - B}: escribo ${S(t - B, B)} y llevo 1` : ` → escribo ${S(t, B)}`}`,
+              );
+              c = t >= B ? 1 : 0;
+            } else {
+              const raw = p - c - q,
+                nc = raw < 0 ? 1 : 0,
+                t = raw + nc * B;
+              L.push(
+                `Columna ${i + 1}: ${p}${c ? " − 1 (préstamo anterior)" : ""} − ${q} = ${raw}${nc ? `; es negativo, pido prestado ${B}: ${raw} + ${B} = ${t}` : ""} → escribo ${S(t, B)}`,
+              );
+              c = nc;
+            }
+          }
+          if (op == "add" && c) L.push("Llevada final: escribo 1 a la izquierda.");
+          L.push(`Resultado: <b>${S(op == "add" ? a + b : a - b, B)}</b>`);
+        }
+        if (op == "mul") {
+          y.forEach((c, i) => {
+            const d = parseInt(c, B);
+            L.push(
+              `Dígito ${c}: ${S(a, B)} × ${c} = ${S(a * d, B)}${i ? `, desplazado ${i} lugar(es) → ${S(a * d * B ** i, B)}` : ""}`,
+            );
+          });
+          L.push(`Suma de parciales: <b>${S(a * b, B)}</b>`);
+        }
+        if (op == "div") {
+          let r = 0,
+            q = "";
+          S(a, B)
+            .split("")
+            .forEach((c) => {
+              const cur = r * B + parseInt(c, B),
+                d = Math.floor(cur / b);
+              r = cur - d * b;
+              q += S(d, B);
+              L.push(
+                `Resto parcial ${S(cur, B)} ÷ ${S(b, B)} → cifra ${S(d, B)}, sobra ${S(r, B)}`,
+              );
+            });
+          L.push(
+            `Cociente <b>${S(Math.floor(a / b), B)}</b>, residuo <b>${S(a % b, B)}</b>. Comprobación: ${S(b, B)} × ${S(Math.floor(a / b), B)} + ${S(a % b, B)} = ${S(a, B)}`,
+          );
+          L.push(
+            a % b
+              ? `La división no es exacta: el resultado fraccionario sería ${(a / b).toFixed(4)} en decimal. Aquí se pide solo la parte entera y el residuo.`
+              : "La división es exacta: el resultado es entero y el residuo es 0.",
+          );
+        }
+        return L;
+      }
+
+      /* ==========================================================
+         SECCIÓN 2 (cont.) · EJERCICIOS: GENERAR, COMPROBAR Y MOSTRAR SOLUCIÓN
+         ========================================================== */
+      function ob() {
+        const [f, t] = MODS[st.m];
+        if (![f, t].includes(st.ob)) st.ob = f == 10 ? t : f;
+        return st.ob;
+      }
+      function gen() {
+        st.fb = "";
+        const lv = st.lv;
+        if (st.mode == "conv") {
+          st.ex = { n: R(1, [15, 255, 4095][lv]) };
+          return;
+        }
+        const op = st.mode,
+          mx = (op == "mul" ? [7, 15, 63] : [15, 63, 255])[lv];
+        let a = R(1, mx),
+          b = R(1, mx);
+        if (op == "sub" && a < b) [a, b] = [b, a];
+        if (op == "div") {
+          b = R(2, Math.max(3, mx >> 1));
+          a = b * R(1, Math.max(2, mx >> 2)) + R(0, b - 1);
+        }
+        st.ex = { a, b };
+      }
+      function expd() {
+        const [f, t] = MODS[st.m],
+          B = ob(),
+          e = st.ex;
+        if (st.mode == "conv") return { base: t, v: [S(e.n, t)], s: cS(e.n, f, t) };
+        const { a, b } = e,
+          op = st.mode,
+          v = { add: a + b, sub: a - b, mul: a * b }[op];
+        return {
+          base: B,
+          v: op == "div" ? [S(Math.floor(a / b), B), S(a % b, B)] : [S(v, B)],
+          s: oS(op, a, b, B),
+        };
+      }
+      function chk() {
+        const x = expd(),
+          ins = [...document.querySelectorAll("#ex input")].map((i) =>
+            i.value.trim().toUpperCase(),
+          );
+        if (ins.some((v) => !v)) {
+          st.fb = '<div class="fb bad">Escribe tu respuesta antes de comprobar.</div>';
+          return draw(1);
+        }
+        const bad = ins.find((v) => !new RegExp("^[" + RX[x.base] + "]+$").test(v));
+        if (bad) {
+          st.fb = `<div class="fb bad">“${bad}” no es válido en ${NM[x.base]}. Dígitos permitidos: ${DG[x.base]}.</div>`;
+          return draw(1);
+        }
+        const ok = ins.every((v, i) => v.replace(/^0+(?=.)/, "") == x.v[i]);
+        st.fb = `<div class="fb ${ok ? "ok" : "bad"}"><b>${ok ? "¡Correcto!" : "Aún no."}</b> ${ok ? "" : "La respuesta es "}${ok ? "" : x.v.join(" y residuo ")}<ol class="st">${x.s.map((l) => `<li>${l}</li>`).join("")}</ol></div>`;
+        draw(1);
+      }
+      function sol() {
+        const x = expd();
+        st.fb = `<div class="fb ok"><b>Solución: ${x.v.join(" y residuo ")}</b><ol class="st">${x.s.map((l) => `<li>${l}</li>`).join("")}</ol></div>`;
+        draw(1);
+      }
+
+      /* ==========================================================
+         SECCIÓN 2 (cont.) · VISTA DEL MÓDULO DE NUMERACIÓN
+         ========================================================== */
+      function viewNum() {
+        const [f, t] = MODS[st.m],
+          B = ob();
+        if (!st.ex) gen();
+        const e = st.ex,
+          conv = st.mode == "conv";
+        let prompt, ex, inputs;
+        if (conv) {
+          prompt = `Convierte <b class="mono">${S(e.n, f)}</b><sub>${f}</sub> (${NM[f]}) a ${NM[t]}.`;
+          inputs = `<input aria-label="Respuesta en ${NM[t]}" placeholder="Base ${t}" autocomplete="off">`;
+          const n = 45;
+          ex = `<span class="ex">${S(n, f)}<sub>${f}</sub> → ${S(n, t)}<sub>${t}</sub></span><ol class="st">${cS(
+            n,
+            f,
+            t,
+          )
+            .map((l) => `<li>${l}</li>`)
+            .join("")}</ol>`;
+        } else {
+          const op = st.mode,
+            [a, b] = EXA[op];
+          prompt = `Actividad en base ${NM[B]} (no es una conversión): <b class="mono">${S(e.a, B)} ${SYM[op]} ${S(e.b, B)}</b>. Responde en base ${B}.`;
+          inputs =
+            op == "div"
+              ? `<input aria-label="Cociente" placeholder="Cociente" autocomplete="off"><input aria-label="Residuo" placeholder="Residuo" autocomplete="off">`
+              : `<input aria-label="Resultado" placeholder="Resultado base ${B}" autocomplete="off">`;
+          ex = `<span class="ex">${S(a, B)} ${SYM[op]} ${S(b, B)}</span><ol class="st">${oS(
+            op,
+            a,
+            b,
+            B,
+          )
+            .map((l) => `<li>${l}</li>`)
+            .join("")}</ol>`;
+        }
+        return `<div class="pills">${MODS.map((m, i) => `<button class="pill ${i == st.m ? "a" : ""}" onclick="st.m=${i};st.ob=null;st.ex=null;draw()">${cap(NM[m[0]])} a ${NM[m[1]]}</button>`).join("")}</div>
+<div class="card"><h2>${cap(NM[f])} a ${NM[t]}</h2>${[f, t].map((b) => `<p><b>${cap(NM[b])}.</b> ${TH[b]}</p>`).join("")}
+<h3>Procedimiento</h3><p>${f == 10 ? `Divisiones sucesivas: divide entre ${t} hasta llegar a 0 y lee los residuos de abajo hacia arriba.` : `Valor posicional: multiplica cada dígito por ${f} elevado a su posición (de derecha a izquierda, empezando en 0) y suma.`}</p></div>
+<div class="pills" role="tablist">${MODES.map((m) => `<button class="pill ${st.mode == m[0] ? "a" : ""}" onclick="st.mode='${m[0]}';gen();draw()">${m[1]}</button>`).join("")}</div>
+<div class="card"><h3 style="margin-top:0">${conv ? "Reglas de la conversión" : "Regla de la " + MODES.find((m) => m[0] == st.mode)[1].toLowerCase()}</h3><p>${conv ? (f == 10 ? "Cada residuo es un dígito del resultado; en hexadecimal, residuos 10 a 15 se escriben A a F." : "Cada dígito se multiplica por su peso; en hexadecimal, A a F valen 10 a 15.") : RULE[st.mode]}</p>
+${conv ? "" : `<p class="lbl">Base de la operación: ${[f, t].map((b) => `<button class="pill ${b == B ? "a" : ""}" onclick="st.ob=${b};gen();draw()">${NM[b]}</button>`).join(" ")}</p>`}
+<h3>Ejemplo resuelto</h3>${ex}</div>
+<div class="card" id="ex"><h3 style="margin-top:0">Ejercicio</h3><div class="pills">${LV.map((l, i) => `<button class="pill ${i == st.lv ? "a" : ""}" onclick="st.lv=${i};gen();draw()">${l}</button>`).join("")}</div>
+<p>${prompt}</p>${inputs}<div><button class="btn" onclick="chk()">Comprobar</button><button class="btn s" onclick="gen();draw()">Otro ejercicio</button><button class="btn s" onclick="st.fb='';draw()">Reiniciar</button><button class="btn s" onclick="sol()">Ver solución</button></div>${st.fb}</div>`;
+      }
+
+      /* ==========================================================
+         SECCIÓN 3 · PUERTAS LÓGICAS
+         Definiciones, símbolos SVG, tabla de verdad, simulador y ejercicio de predicción.
+         ========================================================== */
+      const G = {
+        NOT: [
+          "Inversor NOT",
+          "Y = ¬A",
+          (a) => N(a),
+          "Invierte la señal: entrega 1 cuando la entrada es 0 y 0 cuando es 1.",
+          "Un sensor que enciende una lámpara cuando NO hay luz.",
+        ],
+        AND: [
+          "AND",
+          "Y = A · B",
+          (a, b) => a & b,
+          "Da 1 solo si todas sus entradas valen 1.",
+          "Una prensa que arranca solo si el operario pulsa ambos botones.",
+        ],
+        OR: [
+          "OR",
+          "Y = A + B",
+          (a, b) => a | b,
+          "Da 1 si al menos una entrada vale 1.",
+          "Una alarma que suena si se abre la puerta o la ventana.",
+        ],
+        NAND: [
+          "NAND",
+          "Y = ¬(A · B)",
+          (a, b) => N(a & b),
+          "Es un AND seguido de NOT: da 0 solo cuando ambas entradas valen 1.",
+          "Un seguro que se activa salvo que ambos sensores estén en 1.",
+        ],
+        NOR: [
+          "NOR",
+          "Y = ¬(A + B)",
+          (a, b) => N(a | b),
+          "Es un OR seguido de NOT: da 1 solo cuando ambas entradas valen 0.",
+          "Una luz de reposo que se enciende si no hay ruido ni movimiento.",
+        ],
+        XOR: [
+          "XOR",
+          "Y = A ⊕ B",
+          (a, b) => a ^ b,
+          "Da 1 cuando las entradas son diferentes.",
+          "Una escalera con dos interruptores: cambiar cualquiera invierte la luz.",
+        ],
+        XNOR: [
+          "XNOR",
+          "Y = ¬(A ⊕ B)",
+          (a, b) => N(a ^ b),
+          "Da 1 cuando las entradas son iguales.",
+          "Un comparador que indica si dos bits coinciden.",
+        ],
+      };
+      const WHY = {
+        NOT: (a, b, y) => `la entrada es ${a} y el inversor la niega`,
+        AND: (a, b, y) => (y ? "ambas entradas son 1" : "hay al menos un 0"),
+        OR: (a, b, y) => (y ? "al menos una entrada es 1" : "ambas entradas son 0"),
+        NAND: (a, b, y) =>
+          y
+            ? "hay al menos un 0 (el AND da 0 y el NOT lo invierte)"
+            : "ambas son 1 (el AND da 1 y el NOT lo invierte)",
+        NOR: (a, b, y) =>
+          y
+            ? "ambas son 0 (el OR da 0 y el NOT lo invierte)"
+            : "hay al menos un 1 (el OR da 1 y el NOT lo invierte)",
+        XOR: (a, b, y) => (y ? "las entradas son diferentes" : "las entradas son iguales"),
+        XNOR: (a, b, y) => (y ? "las entradas son iguales" : "las entradas son diferentes"),
+      };
+      function svg(t, a, b, y) {
+        const two = t != "NOT",
+          k = { NOT: "t", AND: "a", NAND: "a", OR: "o", NOR: "o", XOR: "x", XNOR: "x" }[t],
+          inv = /^(NOT|NAND|NOR|XNOR)$/.test(t),
+          end = { t: 150, a: 140, o: 160, x: 160 }[k],
+          body = {
+            t: "M60 25 L150 60 L60 95 Z",
+            a: "M60 20 H100 A40 40 0 0 1 100 100 H60 Z",
+            o: "M60 20 Q110 20 160 60 Q110 100 60 100 Q85 60 60 20 Z",
+            x: "M66 20 Q116 20 166 60 Q116 100 66 100 Q91 60 66 20 Z",
+          }[k],
+          ox = end + (k == "x" ? 6 : 0) + (inv ? 12 : 0);
+        const c = (v) => (v ? "w on" : "w");
+        return `<svg viewBox="0 0 260 120" role="img" aria-label="Símbolo ${t}" style="max-width:320px;width:100%"><path class="${c(a)}" d="M4 ${two ? 42 : 60} H${two ? 64 : 60}"/>${two ? `<path class="${c(b)}" d="M4 78 H64"/>` : ""}<path class="g" d="${body}"/>${k == "x" ? '<path class="g" style="fill:none" d="M56 20 Q81 60 56 100"/>' : ""}${inv ? `<circle class="g" cx="${end + (k == "x" ? 6 : 0) + 6}" cy="60" r="6"/>` : ""}<path class="${c(y)}" d="M${ox} 60 H236"/><circle cx="244" cy="60" r="10" fill="${y ? "var(--on)" : "var(--pa)"}" stroke="var(--ink)" stroke-width="3"/><text x="2" y="${two ? 34 : 52}">A=${a}</text>${two ? `<text x="2" y="102">B=${b}</text>` : ""}<text x="226" y="94">Y=${y}</text></svg>`;
+      }
+      const rows = (t) =>
+        t == "NOT"
+          ? [[0], [1]]
+          : [
+              [0, 0],
+              [0, 1],
+              [1, 0],
+              [1, 1],
+            ];
+      function newPx() {
+        const t = st.g,
+          r = rows(t);
+        st.px = r[R(0, r.length - 1)];
+        st.pf = "";
+      }
+      function pred(v) {
+        const t = st.g,
+          [a, b] = st.px,
+          y = G[t][2](a, b);
+        st.pf = `<div class="fb ${v == y ? "ok" : "bad"}"><b>${v == y ? "¡Correcto!" : "No exactamente."}</b> Y = ${y} porque ${WHY[t](a, b, y)}.</div>`;
+        draw(1);
+      }
+      function viewG() {
+        const t = st.g,
+          g = G[t],
+          two = t != "NOT",
+          a = st.A,
+          b = two ? st.B : 0,
+          y = g[2](a, b);
+        if (!st.px) newPx();
+        const [pa, pb] = st.px;
+        return `<div class="pills">${Object.keys(G)
+          .map(
+            (k) =>
+              `<button class="pill ${k == t ? "a" : ""}" onclick="st.g='${k}';st.px=null;draw()">${k}</button>`,
+          )
+          .join("")}</div>
+<div class="grid"><div class="card"><h2>${g[0]}</h2><p>${g[3]}</p><p class="mono" style="font-size:1.2rem">${g[1]}</p><p class="lbl"><b>Ejemplo práctico:</b> ${g[4]}</p>
+<h3>Tabla de verdad</h3><div class="tw"><table><tr><th>${two ? "A</th><th>B" : "A"}</th><th>Y</th></tr>${rows(
+          t,
+        )
+          .map(
+            (r) =>
+              `<tr class="${r[0] == a && (!two || r[1] == b) ? "h" : ""}">${r.map((v) => `<td>${v}</td>`).join("")}<td>${g[2](...r)}</td></tr>`,
+          )
+          .join("")}</table></div></div>
+<div class="card"><h2>Simulador</h2><div class="sw"><span>Entrada A</span><button class="tg ${a ? "on" : ""}" aria-pressed="${!!a}" onclick="st.A^=1;draw(1)">${a}</button></div>${two ? `<div class="sw"><span>Entrada B</span><button class="tg ${b ? "on" : ""}" aria-pressed="${!!b}" onclick="st.B^=1;draw(1)">${b}</button></div>` : ""}${svg(t, a, b, y)}
+<p><b>Y = ${y}</b>: ${two ? `con A=${a} y B=${b}` : `con A=${a}`}, ${WHY[t](a, b, y)}.</p></div></div>
+<div class="card"><h3 style="margin-top:0">Predice la salida</h3><p>${two ? `A = ${pa} y B = ${pb}` : `A = ${pa}`}. ¿Cuánto vale Y en la puerta ${t}?</p><button class="btn" onclick="pred(0)">Y = 0</button><button class="btn" onclick="pred(1)">Y = 1</button><button class="btn s" onclick="newPx();draw(1)">Otro ejercicio</button>${st.pf}</div>`;
+      }
+
+      /* ==========================================================
+         SECCIÓN 4 · ÁLGEBRA BOOLEANA Y TEOREMAS
+         Leyes, verificación con tablas de verdad, dualidad y ejercicios de simplificación.
+         ========================================================== */
+      const L = [
+        [
+          "Ley de identidad",
+          "Sumar 0 o multiplicar por 1 no cambia la variable.",
+          [
+            ["A + 0 = A", "A", (a) => a | 0, (a) => a],
+            ["A · 1 = A", "A", (a) => a & 1, (a) => a],
+          ],
+        ],
+        [
+          "Ley de dominación o elemento nulo",
+          "Sumar 1 da siempre 1; multiplicar por 0 da siempre 0.",
+          [
+            ["A + 1 = 1", "A", (a) => a | 1, (a) => 1],
+            ["A · 0 = 0", "A", (a) => a & 0, (a) => 0],
+          ],
+        ],
+        [
+          "Ley de idempotencia",
+          "Repetir la misma variable no cambia el resultado.",
+          [
+            ["A + A = A", "A", (a) => a | a, (a) => a],
+            ["A · A = A", "A", (a) => a & a, (a) => a],
+          ],
+        ],
+        [
+          "Ley del complemento",
+          "Una variable y su negación siempre se complementan.",
+          [
+            ["A + ¬A = 1", "A", (a) => a | N(a), (a) => 1],
+            ["A · ¬A = 0", "A", (a) => a & N(a), (a) => 0],
+          ],
+        ],
+        [
+          "Ley de doble negación",
+          "Negar dos veces devuelve la variable original.",
+          [["¬(¬A) = A", "A", (a) => N(N(a)), (a) => a]],
+        ],
+        [
+          "Ley conmutativa",
+          "El orden de los operandos no importa.",
+          [
+            ["A + B = B + A", "AB", (a, b) => a | b, (a, b) => b | a],
+            ["A · B = B · A", "AB", (a, b) => a & b, (a, b) => b & a],
+          ],
+        ],
+        [
+          "Ley asociativa",
+          "La agrupación no importa cuando la operación es la misma.",
+          [
+            ["(A + B) + C = A + (B + C)", "ABC", (a, b, c) => a | b | c, (a, b, c) => a | (b | c)],
+            ["(A · B) · C = A · (B · C)", "ABC", (a, b, c) => a & b & c, (a, b, c) => a & (b & c)],
+          ],
+        ],
+        [
+          "Ley distributiva",
+          "Una operación se distribuye sobre la otra, y en booleana vale en ambos sentidos.",
+          [
+            [
+              "A · (B + C) = A · B + A · C",
+              "ABC",
+              (a, b, c) => a & (b | c),
+              (a, b, c) => (a & b) | (a & c),
+            ],
+            [
+              "A + (B · C) = (A + B) · (A + C)",
+              "ABC",
+              (a, b, c) => a | (b & c),
+              (a, b, c) => (a | b) & (a | c),
+            ],
+          ],
+        ],
+        [
+          "Ley de absorción",
+          "Un término mayor absorbe al que lo contiene.",
+          [
+            ["A + (A · B) = A", "AB", (a, b) => a | (a & b), (a) => a],
+            ["A · (A + B) = A", "AB", (a, b) => a & (a | b), (a) => a],
+          ],
+        ],
+        [
+          "Leyes de De Morgan",
+          "Negar un grupo cambia la operación y niega cada término.",
+          [
+            ["¬(A · B) = ¬A + ¬B", "AB", (a, b) => N(a & b), (a, b) => N(a) | N(b)],
+            ["¬(A + B) = ¬A · ¬B", "AB", (a, b) => N(a | b), (a, b) => N(a) & N(b)],
+          ],
+        ],
+      ];
+      const SP = [
+        ["A · B + A · ¬B", ["A", "B", "A · B", "1"], "A", "Factorizo A · (B + ¬B) = A · 1 = A."],
+        [
+          "A + ¬A · B",
+          ["A + B", "A", "¬A · B", "1"],
+          "A + B",
+          "Distributiva: (A + ¬A) · (A + B) = 1 · (A + B) = A + B.",
+        ],
+        ["¬(A + B) · A", ["0", "A", "¬B", "1"], "0", "De Morgan: ¬A · ¬B · A = (A · ¬A) · ¬B = 0."],
+        [
+          "(A + B) · (A + ¬B)",
+          ["A", "B", "1", "A + B"],
+          "A",
+          "Distributiva: A + (B · ¬B) = A + 0 = A.",
+        ],
+        [
+          "¬(¬A · ¬B)",
+          ["A + B", "A · B", "¬A + ¬B", "0"],
+          "A + B",
+          "De Morgan y doble negación: ¬¬A + ¬¬B = A + B.",
+        ],
+      ];
+      const ITEMS = L.flatMap((l) => l[2]);
+      function newQ() {
+        st.qa = null;
+        const r = R(0, 2);
+        if (r == 2) {
+          const q = SP[R(0, SP.length - 1)];
+          st.q = { t: `Simplifica: ${q[0]}`, o: sh(q[1].slice()), c: q[2], e: q[3] };
+          return;
+        }
+        if (r == 0) {
+          const it = ITEMS[R(0, ITEMS.length - 1)],
+            [l, rt] = it[0].split(" = "),
+            pool = ["0", "1", "A", "B", "¬A", "A + B", "A · B"].filter((x) => x != rt);
+          st.q = {
+            t: `¿A qué es igual ${l}?`,
+            o: sh([rt, ...sh(pool).slice(0, 3)]),
+            c: rt,
+            e: `Se cumple la identidad ${it[0]}.`,
+          };
+          return;
+        }
+        const ls = L.filter((l) => l[2].length == 2),
+          l = ls[R(0, ls.length - 1)],
+          z = R(0, 1),
+          a = l[2][z][0],
+          c = l[2][1 - z][0];
+        st.q = {
+          t: `Principio de dualidad: ¿cuál es el dual de «${a}»?`,
+          o: sh([c, ...sh(ITEMS.map((i) => i[0]).filter((x) => x != c && x != a)).slice(0, 3)]),
+          c,
+          e: "El dual se obtiene intercambiando + por · y 0 por 1.",
+        };
+      }
+      function viewB() {
+        if (!st.q) newQ();
+        const q = st.q;
+        return `<div class="card"><h2>Teoremas del álgebra booleana y simplificación de expresiones</h2><p>Cada identidad se puede comprobar con una tabla de verdad: si la columna de la izquierda y la de la derecha coinciden en todas las filas, la identidad es válida.</p></div>
+${L.map(
+  (l, i) =>
+    `<div class="card"><h3 style="margin-top:0">${l[0]}</h3><p class="lbl">${l[1]}</p>${l[2]
+      .map((it, j) => {
+        const k = i + "." + j;
+        return `<span class="ex">${it[0]} <button class="btn s" onclick="st.vt=st.vt=='${k}'?'':'${k}';draw(1)">${st.vt == k ? "Ocultar" : "Verificar"}</button></span>${st.vt == k ? vt(it) : ""}`;
+      })
+      .join("")}</div>`,
+).join("")}
+<div class="card"><h3 style="margin-top:0">Principio de dualidad</h3><p>Si cambias cada + por ·, cada · por + , cada 0 por 1 y cada 1 por 0 en una identidad válida, obtienes otra identidad válida. Por eso las leyes anteriores vienen en pares: A + 0 = A es el dual de A · 1 = A.</p></div>
+<div class="card"><h3 style="margin-top:0">Ejercicio</h3><p><b>${q.t}</b></p>${q.o.map((o) => `<button class="btn s" onclick="st.qa='${o}';draw(1)">${o}</button>`).join("")}${st.qa != null ? `<div class="fb ${st.qa == q.c ? "ok" : "bad"}"><b>${st.qa == q.c ? "¡Correcto!" : "Incorrecto."}</b> Respuesta: ${q.c}. ${q.e}</div>` : ""}<div><button class="btn" onclick="newQ();draw(1)">Otro ejercicio</button></div></div>`;
+      }
+      function vt(it) {
+        const v = it[1].split(""),
+          n = v.length,
+          r = [];
+        for (let i = 0; i < 2 ** n; i++) {
+          const x = v.map((_, j) => (i >> (n - 1 - j)) & 1);
+          r.push([...x, it[2](...x), it[3](...x)]);
+        }
+        return `<div class="tw"><table><tr>${v.map((c) => `<th>${c}</th>`).join("")}<th>Izquierda</th><th>Derecha</th><th>¿Igual?</th></tr>${r.map((x) => `<tr>${x.map((c) => `<td>${c}</td>`).join("")}<td>${x[n] == x[n + 1] ? "✓" : "✗"}</td></tr>`).join("")}</table></div>`;
+      }
+
+      /* ==========================================================
+         SECCIÓN 5 · FUNDAMENTOS DE ELECTRÓNICA
+         Átomo, Coulomb, unidades, resistencias, circuitos, Ohm/Watt y Kirchhoff.
+         ========================================================== */
+      // --- 5.1 Formato de números y utilidades ---
+      const fx = (x) => {
+        if (x == null || !isFinite(x)) return "—";
+        const a = Math.abs(x);
+        return a && (a < 1e-3 || a >= 1e7) ? x.toExponential(3) : String(+x.toPrecision(5));
+      };
+      const oh = (x) =>
+        x >= 1e6 ? fx(x / 1e6) + " MΩ" : x >= 1e3 ? fx(x / 1e3) + " kΩ" : fx(x) + " Ω";
+      const pick = (a) => a[R(0, a.length - 1)],
+        par = (a, b) => (a * b) / (a + b),
+        nn = (s) => {
+          const x = parseFloat(String(s).replace(",", "."));
+          return isNaN(x) ? null : x;
+        };
+      const CL = [
+          "negro",
+          "café",
+          "rojo",
+          "naranja",
+          "amarillo",
+          "verde",
+          "azul",
+          "violeta",
+          "gris",
+          "blanco",
+          "dorado",
+          "plateado",
+        ],
+        CC = [
+          "#111",
+          "#7a4a21",
+          "#d62828",
+          "#f77f00",
+          "#f2d600",
+          "#2a9d3f",
+          "#2563eb",
+          "#7e22ce",
+          "#9ca3af",
+          "#fff",
+          "#d4a017",
+          "#c0c0c0",
+        ];
+      const sw = (i) =>
+        `<span style="display:inline-block;width:16px;height:32px;border:1px solid var(--ink);border-radius:3px;background:${CC[i]};vertical-align:middle;margin-right:3px" title="${CL[i]}"></span>`;
+      const smd = (s) => {
+        if (/^\d*R\d*$/.test(s) && s !== "R") return parseFloat(s.replace("R", "."));
+        if (!/^\d{2,4}$/.test(s)) return null;
+        if (s.length == 2) return +s;
+        const d = s.length - 1;
+        return +s.slice(0, d) * 10 ** +s[d];
+      };
+      // --- 5.2 Estado del módulo ---
+      let E = { s: "atom", fb: "", t: null, qi: 0, qa: null };
+      // --- 5.3 Temas y teoría ---
+      const EM = [
+        [
+          "atom",
+          "Átomo y carga",
+          [
+            "La energía eléctrica es la energía presente en la materia cargada y en estado dinámico: se obtiene por el movimiento de cargas eléctricas o por procesos que ionizan los átomos.",
+            "El átomo es la unidad más pequeña de la materia que conserva las propiedades de su elemento. Se compone de protones y neutrones (en el núcleo) y electrones (que orbitan el núcleo).",
+            '<div class="tw"><table><tr><th>Partícula</th><th>Ubicación</th><th>Carga (C)</th><th>Masa (g)</th></tr><tr><td>Protón</td><td>Núcleo</td><td>+1,602×10⁻¹⁹</td><td>1,673×10⁻²⁴</td></tr><tr><td>Electrón</td><td>Órbitas</td><td>−1,602×10⁻¹⁹</td><td>9,10×10⁻²⁸</td></tr><tr><td>Neutrón</td><td>Núcleo</td><td>0</td><td>1,675×10⁻²⁴</td></tr></table></div>',
+            "El número de protones define el elemento químico. <b>Ionización</b> es ganar o perder electrones: en equilibrio el átomo es neutro; si pierde electrones queda positivo (catión) y si gana queda negativo (anión). La carga eléctrica mide esa pérdida o ganancia. Cargas del mismo signo se repelen y de signo contrario se atraen.",
+          ],
+        ],
+        [
+          "coul",
+          "Ley de Coulomb",
+          [
+            "La magnitud de la fuerza entre dos cargas puntuales en reposo es directamente proporcional al producto de las cargas e inversamente proporcional al cuadrado de la distancia.",
+            '<p class="mono">F = k·|q₁·q₂| / r²  con k = 9×10⁹ N·m²/C²</p>',
+          ],
+        ],
+        [
+          "unid",
+          "Corriente, tensión, potencia y energía",
+          [
+            "<b>Corriente eléctrica</b> i(t) = dq(t)/dt: carga que atraviesa una superficie por unidad de tiempo. Unidad: amperio [A]. Por convención se asocia al sentido de las cargas positivas, aunque en los conductores se mueven electrones.",
+            "<b>Tipos:</b> <i>continua</i> (misma dirección; los terminales de mayor y menor potencial son siempre los mismos), <i>alterna</i> (magnitud y dirección varían cíclicamente, normalmente senoidal) y <i>pulsante</i> (continua con cambios regulares de magnitud, siempre en el mismo sentido).",
+            "<b>Tensión</b> u(t) = dw(t)/dq(t): diferencia de potencial, trabajo por unidad de carga. Unidad: voltio [V].",
+            "<b>Potencia</b> p(t) = u(t)·i(t): energía intercambiada por unidad de tiempo. 1 W = 1 J/s.",
+            "<b>Energía</b> w(t) = ∫p(τ)dτ: capacidad de realizar un trabajo. Unidad: julio [J]; también Wh y kWh.",
+          ],
+        ],
+        [
+          "res",
+          "Resistencia eléctrica",
+          [
+            "Es la oposición al flujo de corriente en un conductor. Unidad: ohmio [Ω].",
+            '<p class="mono">R = ρ·l / A     R = R₀·(1 + α·ΔT)</p>',
+            "R₀ es la resistencia a la temperatura de referencia, ΔT la desviación de temperatura y α el coeficiente de temperatura del material.",
+            '<div class="tw"><table><tr><th>Material</th><th>ρ (×10⁻⁸ Ω·m)</th><th>α (×10⁻³ °C⁻¹)</th></tr><tr><td>Plata</td><td>1,59</td><td>3,8</td></tr><tr><td>Cobre</td><td>1,7</td><td>3,9</td></tr><tr><td>Oro</td><td>2,44</td><td>3,4</td></tr><tr><td>Aluminio</td><td>2,82</td><td>3,9</td></tr><tr><td>Tungsteno</td><td>5,6</td><td>4,5</td></tr><tr><td>Hierro</td><td>10</td><td>5,0</td></tr><tr><td>Platino</td><td>11</td><td>3,92</td></tr><tr><td>Plomo</td><td>22</td><td>3,9</td></tr><tr><td>Nicromo</td><td>150</td><td>0,4</td></tr></table></div>',
+            "En la calculadora, ρ va en Ω·mm²/m (cobre ≈ 0,017) y A en mm².",
+          ],
+        ],
+        [
+          "cod",
+          "Clasificación y códigos de resistencias",
+          [
+            "Las resistencias se clasifican por <b>fabricación</b> (tipo), <b>consumo</b> (potencia) y <b>valor</b> (ohmios). Las de película de carbón se usan hasta 2 W (película de carbón sobre un tubo cerámico); las de película metálica tienen mejor ruido y estabilidad, hasta 2 W y tolerancia estándar del 1 %. Las <b>SMD</b> son de montaje superficial y llevan un código numérico impreso.",
+            "<b>4 bandas:</b> banda 1 y 2 = dígitos, banda 3 = multiplicador, banda 4 = tolerancia. " +
+              [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => sw(i) + i).join(" ") +
+              " · " +
+              sw(10) +
+              "×0,1 ±5 % · " +
+              sw(11) +
+              "×0,01 ±10 %",
+            "<b>SMD:</b> 3 dígitos (2 cifras + multiplicador, ±5 %): 104 → 10×10⁴ = 100 kΩ. 4 dígitos (3 cifras + multiplicador, ±1 %): 3332 → 333×10² = 33,3 kΩ. La letra R marca la coma decimal (1R2 = 1,2 Ω; R33 = 0,33 Ω).",
+            "<b>Múltiplos:</b> TΩ 10¹² · GΩ 10⁹ · MΩ 10⁶ · kΩ 10³ · Ω 1 · mΩ 10⁻³ · µΩ 10⁻⁶ · nΩ 10⁻⁹ · pΩ 10⁻¹².",
+          ],
+        ],
+        [
+          "circ",
+          "Circuitos serie, paralelo y mixtos",
+          [
+            "<b>Serie:</b> componentes uno tras otro. R<sub>T</sub> = R₁ + R₂ + R₃… La corriente es la misma en todos (I<sub>T</sub> = I₁ = I₂…) y V<sub>T</sub> = V₁ + V₂ + V₃…",
+            "<b>Paralelo:</b> componentes uno al lado del otro. 1/R<sub>T</sub> = 1/R₁ + 1/R₂ + 1/R₃… (con dos: R<sub>T</sub> = R₁·R₂/(R₁+R₂)). La tensión es la misma en todas las ramas e I<sub>T</sub> = I₁ + I₂ + I₃…",
+            "<b>Mixto:</b> combina series con paralelos; se reduce por tramos, de lo más interno hacia afuera.",
+          ],
+        ],
+        [
+          "ohm",
+          "Ley de Ohm y Ley de Watt",
+          [
+            "<b>Ley de Ohm:</b> la corriente es directamente proporcional al voltaje e inversamente proporcional a la resistencia. V = I·R; I = V/R; R = V/I. En el triángulo de memoria se tapa la incógnita y lo visible indica la fórmula.",
+            "<b>Ley de Watt:</b> P = V·I, y combinando con Ohm: P = I²·R = V²/R; I = P/V; V = P/I; I = √(P/R); V = √(P·R).",
+          ],
+        ],
+        [
+          "kir",
+          "Leyes de Kirchhoff",
+          [
+            "Son dos igualdades basadas en la conservación de la energía y de la carga; se usan para hallar corrientes y tensiones en cualquier punto de un circuito.",
+            "<b>Ley de mallas</b> (la presentación la llama “primera”; muchos textos la numeran como segunda): a lo largo de una malla, la suma de fuerzas electromotrices es igual a la suma de las caídas de potencial en las resistencias, ΣV = Σ(I·R). Una elevación de voltaje es positiva y una caída es negativa.",
+            "<b>Ley de nodos:</b> la suma de corrientes que entran a un nodo es igual a la suma de las que salen.",
+          ],
+        ],
+      ];
+      // --- 5.4 Qué ejercicios tiene cada tema ---
+      const TKS = {
+        coul: ["coul"],
+        unid: ["corr"],
+        res: ["res"],
+        cod: ["color", "smd"],
+        circ: ["serie", "paralelo", "mixto"],
+        ohm: ["ohm"],
+        kir: ["kirch"],
+      };
+      // --- 5.5 Solucionadores (Kirchhoff y tabla de circuitos) ---
+      const kS = (V1, V2, R1, R2, R3) => {
+        const Vt = (V1 / R1 + V2 / R2) / (1 / R1 + 1 / R2 + 1 / R3);
+        return { Vt, I1: (V1 - Vt) / R1, I2: (V2 - Vt) / R2, I3: Vt / R3 };
+      };
+      function circT(V, ty, Rs) {
+        const s = ty == "s",
+          RT = s ? Rs.reduce((a, b) => a + b) : 1 / Rs.reduce((a, b) => a + 1 / b, 0),
+          IT = V / RT,
+          rows = Rs.map((r, i) => {
+            const I = s ? IT : V / r,
+              U = s ? IT * r : V;
+            return [`R${i + 1}`, r, I, U, I * U];
+          });
+        rows.push(["Total", RT, IT, V, V * IT]);
+        return `<div class="tw"><table><tr><th></th><th>R (Ω)</th><th>I (A)</th><th>V (V)</th><th>P (W)</th></tr>${rows
+          .map(
+            (r) =>
+              `<tr><td>${r[0]}</td>${r
+                .slice(1)
+                .map((x) => `<td>${fx(x)}</td>`)
+                .join("")}</tr>`,
+          )
+          .join("")}</table></div>`;
+      }
+      // --- 5.6 Ejemplos resueltos de las diapositivas ---
+      const EX = {
+        coul: () =>
+          `<p>Una carga de 3×10⁻⁶ C está a 2 m de otra de −8×10⁻⁶ C. F = 9×10⁹·(24×10⁻¹²)/2² = <b>${fx((9e9 * 24e-12) / 4)} N</b>, de atracción (signos opuestos).</p>`,
+        res: () => {
+          const c = (1.7e-8 * 10) / 0.5e-6,
+            a = (2.82e-8 * 10) / 0.5e-6,
+            g = 1 + 3.9e-3 * 40;
+          return `<p><b>Ejercicio 1.</b> Conductores de 10 m y 0,5 mm². Cobre: R₀ = ρ·l/A = ${fx(c)} Ω y a 40 °C R = R₀(1+α·ΔT) = ${fx(c * g)} Ω. Aluminio: R₀ = ${fx(a)} Ω y a 40 °C R = ${fx(a * g)} Ω.</p><p><b>Ejercicio 2.</b> ρ = 0,02 Ω·mm²/m, l = 50 m, R = 10 Ω: A = ρ·l/R = <b>0,1 mm²</b>.</p>`;
+        },
+        cod: () =>
+          `<p>${sw(1)}${sw(0)}${sw(3)}${sw(10)} café-negro-naranja-dorado = 10×10³ = <b>10 kΩ ±5 %</b>.</p><p>SMD 104 = <b>${oh(smd("104"))}</b>; 3332 = <b>${oh(smd("3332"))}</b>; 1R2 = <b>${oh(smd("1R2"))}</b>; R33 = <b>${oh(smd("R33"))}</b>.</p>`,
+        circ: () => {
+          const p = [150, 25, 50, 50],
+            b = par(58, 33),
+            m = par(10 + b + 30, 21);
+          return `<p><b>Serie</b> (150, 25, 50, 50, 50, 25, 150 Ω): R<sub>T</sub> = <b>${[150, 25, 50, 50, 50, 25, 150].reduce((a, c) => a + c)} Ω</b>.</p><p><b>Paralelo</b> (150, 25, 50, 50 Ω): R<sub>T</sub> = <b>${fx(1 / p.reduce((a, c) => a + 1 / c, 0))} Ω</b>.</p><p><b>Mixto</b> (diapositiva 33): (R3+R4+R7) ∥ R8 = ${fx(b)} Ω; R2 + bloque + R6 = ${fx(40 + b)} Ω, en paralelo con R9 = ${fx(m)} Ω; R<sub>T</sub> = R1 + R5 + ${fx(m)} = <b>${fx(30 + m)} Ω</b>.</p><p><b>Serie a 35 V</b> (2, 10 y 2 Ω):</p>${circT(35, "s", [2, 10, 2])}<p><b>Paralelo a 35 V</b> (5, 10 y 8 Ω):</p>${circT(35, "p", [5, 10, 8])}`;
+        },
+        ohm: () =>
+          `<p><b>1.</b> Bombilla a 220 V y 0,45 A: P = V·I = <b>${fx(220 * 0.45)} W</b>; R = V/I = <b>${fx(220 / 0.45)} Ω</b>.</p><p><b>2.</b> Tostador de 40 Ω con 3 A: P = I²·R = <b>${9 * 40} W</b>; energía = P·t = 0,36 kWh por cada hora de uso.</p><p><b>3.</b> Conductor con 10 A y 90 V: R = V/I = <b>9 Ω</b>.</p><p><b>4.</b> Bombillos a 220 V (I = P/V, R = V²/P):<br>${[
+            ["Incandescente", 30],
+            ["Halógena", 25],
+            ["Fluorescente", 8],
+            ["LED", 3],
+          ]
+            .map((x) => `${x[0]} ${x[1]} W: I = ${fx(x[1] / 220)} A, R = ${fx(48400 / x[1])} Ω`)
+            .join("<br>")}</p>`,
+        kir: () => {
+          const s = kS(12, 9, 2, 2, 4);
+          return `<p>Circuito de la diapositiva 49 (BAT1 = 12 V, BAT2 = 9 V, R1 = 2 Ω, R2 = 2 Ω, R3 = 4 Ω) con ambas fuentes con el positivo hacia arriba: tensión del nodo central = ${fx(s.Vt)} V; I₁ = ${fx(s.I1)} A, I₂ = ${fx(s.I2)} A, I₃ = ${fx(s.I3)} A. Comprobación de nodos: I₁ + I₂ = I₃.</p>`;
+        },
+      };
+      // --- 5.7 Calculadoras interactivas ---
+      const mo = (a, b) => {
+        const o = [];
+        for (let i = a; i <= b; i++) o.push([i, CL[i]]);
+        return o;
+      };
+      const CA = {
+        coul: {
+          f: [
+            ["q1", "q₁ (µC)", "3"],
+            ["q2", "q₂ (µC)", "-8"],
+            ["r", "r (m)", "2"],
+          ],
+          run: (r) => {
+            const [a, b, d] = r.map(nn);
+            if (a == null || b == null || !d)
+              return "Completa las cargas y una distancia distinta de 0.";
+            return `F = <b>${fx((9e9 * Math.abs(a * b) * 1e-12) / d ** 2)} N</b> (${a * b < 0 ? "atracción" : a * b > 0 ? "repulsión" : "sin fuerza"})`;
+          },
+        },
+        res: {
+          f: [
+            ["p", "ρ (Ω·mm²/m)", "0.0175"],
+            ["l", "l (m)", "10"],
+            ["A", "A (mm²)", "0.5"],
+            ["a", "α (1/°C)", "0.0039"],
+            ["d", "ΔT (°C)", "40"],
+          ],
+          run: (r) => {
+            const [p, l, A, a, d] = r.map(nn);
+            if (p == null || l == null || !A) return "Completa ρ, l y A (A distinta de 0).";
+            const R = (p * l) / A;
+            return `R₀ = ρ·l/A = <b>${fx(R)} Ω</b>; con ΔT = ${d || 0} °C: R = <b>${fx(R * (1 + (a || 0) * (d || 0)))} Ω</b>`;
+          },
+        },
+        cod: {
+          f: [
+            ["b1", "Banda 1", "1", mo(1, 9)],
+            ["b2", "Banda 2", "0", mo(0, 9)],
+            ["m", "Multiplicador", "3", [...mo(0, 9), [-1, "dorado ×0,1"], [-2, "plateado ×0,01"]]],
+            [
+              "t",
+              "Tolerancia",
+              "5",
+              [
+                [1, "café ±1 %"],
+                [2, "rojo ±2 %"],
+                [0.5, "verde ±0,5 %"],
+                [5, "dorado ±5 %"],
+                [10, "plateado ±10 %"],
+              ],
+            ],
+            ["s", "Código SMD", "104"],
+          ],
+          run: (r) => {
+            const [a, b, m, t] = r.slice(0, 4).map(Number),
+              mi = m < 0 ? 10 - m - 1 : m,
+              ti = { 1: 1, 2: 2, 0.5: 5, 5: 10, 10: 11 }[t],
+              s = r[4].trim().toUpperCase(),
+              v = smd(s);
+            return `${sw(a)}${sw(b)}${sw(mi)}${sw(ti)} = <b>${oh((10 * a + b) * 10 ** m)} ±${t} %</b><br>SMD “${s}”: ${v == null ? "código no válido" : "<b>" + oh(v) + "</b>"}`;
+          },
+        },
+        circ: {
+          f: [
+            ["V", "V (V)", "35"],
+            [
+              "ty",
+              "Tipo",
+              "s",
+              [
+                ["s", "Serie"],
+                ["p", "Paralelo"],
+              ],
+            ],
+            ["R", "Resistencias (Ω, separadas por comas)", "2,10,2"],
+          ],
+          run: (r) => {
+            const V = nn(r[0]),
+              Rs = r[2]
+                .split(/[;, ]+/)
+                .map(nn)
+                .filter((x) => x > 0);
+            return !V || !Rs.length
+              ? "Escribe V y las resistencias (todas mayores que 0)."
+              : circT(V, r[1], Rs);
+          },
+        },
+        ohm: {
+          f: [
+            ["V", "V (V)", "220"],
+            ["I", "I (A)", ""],
+            ["R", "R (Ω)", "330"],
+            ["P", "P (W)", ""],
+          ],
+          run: (r) => {
+            let [V, I, R, P] = r.map(nn);
+            for (let k = 0; k < 3; k++) {
+              if (V && I && !R) R = V / I;
+              if (V && R && !I) I = V / R;
+              if (I && R && !V) V = I * R;
+              if (P && V && !I) I = P / V;
+              if (P && I && !V) V = P / I;
+              if (P && R && !V && !I) V = Math.sqrt(P * R);
+              if (V && I && !P) P = V * I;
+            }
+            return V && I && R && P
+              ? `V = <b>${fx(V)} V</b> · I = <b>${fx(I)} A</b> · R = <b>${fx(R)} Ω</b> · P = <b>${fx(P)} W</b>`
+              : "Escribe al menos dos valores distintos de 0 y deja vacíos los demás.";
+          },
+        },
+        kir: {
+          f: [
+            ["V1", "BAT1 (V)", "12"],
+            ["V2", "BAT2 (V)", "9"],
+            ["R1", "R1 (Ω)", "2"],
+            ["R2", "R2 (Ω)", "2"],
+            ["R3", "R3 (Ω)", "4"],
+          ],
+          run: (r) => {
+            const [a, b, c, d, e] = r.map(nn);
+            if (a == null || b == null || !c || !d || !e)
+              return "Completa los cinco valores (resistencias distintas de 0). Usa tensión negativa para invertir una fuente.";
+            const s = kS(a, b, c, d, e);
+            return `Nodo central = <b>${fx(s.Vt)} V</b> · I₁ = <b>${fx(s.I1)} A</b> · I₂ = <b>${fx(s.I2)} A</b> · I₃ (por R3) = <b>${fx(s.I3)} A</b><br><span class="lbl">Ambas fuentes con el positivo hacia el mismo lado; R1 y R2 en las ramas laterales y R3 en la central.</span>`;
+          },
+        },
+      };
+      // --- 5.8 Generadores de ejercicios aleatorios ---
+      const rl = (n, a) => Array.from({ length: n }, () => pick(a));
+      const TK = {
+        coul: () => {
+          const a = R(1, 9),
+            b = R(1, 9) * (R(0, 1) ? 1 : -1),
+            d = R(1, 5),
+            F = (9e9 * a * Math.abs(b) * 1e-12) / d ** 2;
+          return {
+            q: `Una carga de ${a}×10⁻⁶ C está a ${d} m de otra de ${b}×10⁻⁶ C. ¿Cuál es la magnitud de la fuerza (N)?`,
+            f: ["F (N)"],
+            a: [F],
+            s: [
+              `F = k·|q₁·q₂|/r² = 9×10⁹·${a * Math.abs(b)}×10⁻¹² / ${d}²`,
+              `F = ${fx(F)} N (${b < 0 ? "atracción" : "repulsión"})`,
+            ],
+          };
+        },
+        corr: () => {
+          const k = R(0, 2);
+          if (k == 0) {
+            const Q = R(2, 60),
+              t = R(2, 10);
+            return {
+              q: `Por un conductor pasan ${Q} C en ${t} s. ¿Cuál es la corriente (A)?`,
+              f: ["I (A)"],
+              a: [Q / t],
+              s: [`I = q/t = ${Q}/${t} = ${fx(Q / t)} A`],
+            };
+          }
+          if (k == 1) {
+            const P = pick([60, 100, 500, 1500, 2000]),
+              h = R(1, 8);
+            return {
+              q: `Un aparato de ${P} W funciona ${h} h. ¿Cuánta energía consume (kWh)?`,
+              f: ["E (kWh)"],
+              a: [(P * h) / 1000],
+              s: [`E = P·t = ${P} W · ${h} h = ${P * h} Wh = ${fx((P * h) / 1000)} kWh`],
+            };
+          }
+          const V = pick([5, 12, 24, 110, 220]),
+            Q = R(2, 20);
+          return {
+            q: `¿Cuánta energía (J) entrega una fuente de ${V} V al mover ${Q} C?`,
+            f: ["w (J)"],
+            a: [V * Q],
+            s: [`u = w/q, entonces w = u·q = ${V}·${Q} = ${V * Q} J`],
+          };
+        },
+        res: () => {
+          if (R(0, 1)) {
+            const p = pick([0.0175, 0.02, 0.028, 0.1]),
+              l = pick([20, 50, 100]),
+              r = pick([2, 5, 10]);
+            return {
+              q: `Un conductor tiene ρ = ${p} Ω·mm²/m, longitud ${l} m y resistencia ${r} Ω. Calcula su sección (mm²).`,
+              f: ["A (mm²)"],
+              a: [(p * l) / r],
+              s: [`R = ρ·l/A, entonces A = ρ·l/R = ${p}·${l}/${r} = ${fx((p * l) / r)} mm²`],
+            };
+          }
+          const R0 = R(10, 100),
+            d = R(10, 80),
+            R1 = R0 * (1 + 3.9e-3 * d);
+          return {
+            q: `Un conductor de cobre (α = 3,9×10⁻³ °C⁻¹) tiene ${R0} Ω a 0 °C. ¿Cuál es su resistencia a ${d} °C (Ω)?`,
+            f: ["R (Ω)"],
+            a: [R1],
+            s: [`R = R₀·(1+α·ΔT) = ${R0}·(1+3,9×10⁻³·${d}) = ${fx(R1)} Ω`],
+          };
+        },
+        color: () => {
+          const a = R(1, 9),
+            b = R(0, 9),
+            m = R(0, 6),
+            t = R(10, 11),
+            v = (10 * a + b) * 10 ** m;
+          return {
+            q: `Resistencia de 4 bandas: ${sw(a)}${sw(b)}${sw(m)}${sw(t)} (${CL[a]}, ${CL[b]}, ${CL[m]}, ${CL[t]}). ¿Cuál es su valor en ohmios (Ω)?`,
+            f: ["R (Ω)"],
+            a: [v],
+            s: [
+              `Dígitos: ${a}${b}; multiplicador: ×10^${m}`,
+              `R = ${a}${b} × 10^${m} = ${fx(v)} Ω (${oh(v)}), tolerancia ${t == 10 ? "±5 %" : "±10 %"}`,
+            ],
+          };
+        },
+        smd: () => {
+          const L = R(3, 4),
+            d = L == 3 ? String(R(10, 99)) : String(R(100, 999)),
+            m = R(0, 5),
+            c = d + m,
+            v = +d * 10 ** m;
+          return {
+            q: `Una resistencia SMD tiene impreso el código “${c}”. ¿Cuál es su valor en ohmios (Ω)?`,
+            f: ["R (Ω)"],
+            a: [v],
+            s: [
+              `${L} dígitos: ${L - 1} cifras (${d}) y multiplicador ×10^${m}`,
+              `R = ${d} × 10^${m} = ${fx(v)} Ω (${oh(v)})`,
+            ],
+          };
+        },
+        serie: () => {
+          const Rs = rl(R(3, 4), [10, 15, 20, 25, 30, 50, 100]),
+            V = pick([12, 24, 35, 60]),
+            RT = Rs.reduce((a, b) => a + b);
+          return {
+            q: `Resistencias de ${Rs.join(", ")} Ω en serie, conectadas a ${V} V. Calcula R<sub>T</sub> (Ω) e I<sub>T</sub> (A).`,
+            f: ["RT (Ω)", "IT (A)"],
+            a: [RT, V / RT],
+            s: [
+              `R<sub>T</sub> = ${Rs.join(" + ")} = ${RT} Ω`,
+              `I<sub>T</sub> = V/R<sub>T</sub> = ${V}/${RT} = ${fx(V / RT)} A`,
+            ],
+          };
+        },
+        paralelo: () => {
+          const Rs = rl(R(2, 3), [10, 20, 25, 30, 40, 50, 60, 100]),
+            V = pick([12, 24, 35, 60]),
+            RT = 1 / Rs.reduce((a, b) => a + 1 / b, 0);
+          return {
+            q: `Resistencias de ${Rs.join(", ")} Ω en paralelo, conectadas a ${V} V. Calcula R<sub>T</sub> (Ω) e I<sub>T</sub> (A).`,
+            f: ["RT (Ω)", "IT (A)"],
+            a: [RT, V / RT],
+            s: [
+              `1/R<sub>T</sub> = ${Rs.map((x) => "1/" + x).join(" + ")}, entonces R<sub>T</sub> = ${fx(RT)} Ω`,
+              `I<sub>T</sub> = V/R<sub>T</sub> = ${V}/${fx(RT)} = ${fx(V / RT)} A`,
+            ],
+          };
+        },
+        mixto: () => {
+          const [a, b, c, d] = rl(4, [10, 20, 25, 30, 40, 50, 60]),
+            p = par(b, c),
+            RT = a + p + d;
+          return {
+            q: `R1 = ${a} Ω en serie con el paralelo de R2 = ${b} Ω y R3 = ${c} Ω, y todo en serie con R4 = ${d} Ω. Calcula R<sub>T</sub> (Ω).`,
+            f: ["RT (Ω)"],
+            a: [RT],
+            s: [
+              `R2 ∥ R3 = ${b}·${c}/(${b}+${c}) = ${fx(p)} Ω`,
+              `R<sub>T</sub> = ${a} + ${fx(p)} + ${d} = ${fx(RT)} Ω`,
+            ],
+          };
+        },
+        ohm: () => {
+          const Vs = [110, 120, 150, 220, 230, 270, 290, 350, 380, 430],
+            Is = [0.2, 0.4, 0.5, 0.7, 0.9, 1, 1.8, 2, 2.4, 3, 4],
+            Rs = [45, 65, 75, 80, 90, 98, 140, 310, 330, 400, 470, 480, 560],
+            k = R(0, 2);
+          let V, I, Q, g, m;
+          if (k == 0) {
+            V = pick(Vs);
+            Q = pick(Rs);
+            I = V / Q;
+            g = `V = ${V} V y R = ${Q} Ω`;
+            m = ["I (A)", I, `I = V/R = ${V}/${Q}`];
+          } else if (k == 1) {
+            I = pick(Is);
+            Q = pick(Rs);
+            V = I * Q;
+            g = `I = ${I} A y R = ${Q} Ω`;
+            m = ["V (V)", V, `V = I·R = ${I}·${Q}`];
+          } else {
+            V = pick(Vs);
+            I = pick(Is);
+            Q = V / I;
+            g = `V = ${V} V e I = ${I} A`;
+            m = ["R (Ω)", Q, `R = V/I = ${V}/${I}`];
+          }
+          const P = V * I;
+          return {
+            q: `Dados ${g}, calcula la incógnita y la potencia.`,
+            f: [m[0], "P (W)"],
+            a: [m[1], P],
+            s: [`${m[2]} = ${fx(m[1])}`, `P = V·I = ${fx(V)}·${fx(I)} = ${fx(P)} W`],
+          };
+        },
+        kirch: () => {
+          const V1 = pick([12, 24]),
+            V2 = pick([6, 9, 12]),
+            R1 = pick([1, 2, 4]),
+            R2 = pick([1, 2, 4]),
+            R3 = pick([2, 4, 8]),
+            s = kS(V1, V2, R1, R2, R3);
+          return {
+            q: `Dos fuentes de ${V1} V y ${V2} V (positivo arriba) alimentan, mediante R1 = ${R1} Ω y R2 = ${R2} Ω, un nodo central unido a tierra por R3 = ${R3} Ω. Calcula las corrientes I₁ (por R1), I₂ (por R2) e I₃ (por R3).`,
+            f: ["I₁ (A)", "I₂ (A)", "I₃ (A)"],
+            a: [s.I1, s.I2, s.I3],
+            s: [
+              `Tensión del nodo: (V₁/R₁+V₂/R₂)/(1/R₁+1/R₂+1/R₃) = ${fx(s.Vt)} V`,
+              `I₁ = (V₁−Vₙ)/R₁ = ${fx(s.I1)} A; I₂ = (V₂−Vₙ)/R₂ = ${fx(s.I2)} A; I₃ = Vₙ/R₃ = ${fx(s.I3)} A`,
+              "Ley de nodos: I₁ + I₂ = I₃",
+            ],
+          };
+        },
+      };
+      // --- 5.9 Preguntas de teoría ---
+      const QZ = {
+        atom: [
+          [
+            "¿Qué carga tiene un neutrón?",
+            ["Positiva", "Negativa", "Neutra (0 C)"],
+            2,
+            "El neutrón no tiene carga; está en el núcleo junto a los protones.",
+          ],
+          [
+            "Si un átomo pierde electrones se convierte en…",
+            ["un anión (ion negativo)", "un catión (ion positivo)", "un neutrón"],
+            1,
+            "Pierde carga negativa y queda con exceso de protones: ion positivo.",
+          ],
+          [
+            "Dos cargas del mismo signo…",
+            ["se atraen", "se repelen", "no interactúan"],
+            1,
+            "Cargas iguales se repelen; opuestas se atraen.",
+          ],
+        ],
+        coul: [
+          [
+            "Si se duplica la distancia entre dos cargas, la fuerza…",
+            ["se duplica", "se reduce a la mitad", "se reduce a la cuarta parte"],
+            2,
+            "F es inversamente proporcional a r²: (1/2)² = 1/4.",
+          ],
+        ],
+        unid: [
+          [
+            "La corriente alterna se caracteriza porque…",
+            [
+              "siempre tiene el mismo sentido",
+              "su magnitud y dirección varían cíclicamente",
+              "solo cambia de magnitud",
+            ],
+            1,
+            "La pulsante cambia de magnitud, pero no de sentido.",
+          ],
+          [
+            "La unidad de la potencia eléctrica es…",
+            ["el julio", "el vatio (W = J/s)", "el voltio"],
+            1,
+            "1 W = 1 J/s.",
+          ],
+          [
+            "La corriente eléctrica es…",
+            [
+              "carga por unidad de tiempo",
+              "energía por unidad de carga",
+              "oposición al paso de carga",
+            ],
+            0,
+            "i = dq/dt. La energía por unidad de carga es la tensión.",
+          ],
+        ],
+        res: [
+          [
+            "Si aumenta la longitud de un conductor, su resistencia…",
+            ["aumenta", "disminuye", "no cambia"],
+            0,
+            "R = ρ·l/A: es directamente proporcional a la longitud.",
+          ],
+        ],
+        cod: [["Un SMD marcado “472” vale…", ["472 Ω", "4,7 kΩ", "47 kΩ"], 1, "47×10² = 4700 Ω."]],
+        circ: [
+          [
+            "En un circuito en paralelo, ¿qué es igual en todas las ramas?",
+            ["La corriente", "La tensión", "La resistencia"],
+            1,
+            "V<sub>T</sub> = V₁ = V₂ = V₃; las corrientes se suman.",
+          ],
+        ],
+        ohm: [
+          [
+            "Una plancha de 1000 W a 220 V consume aproximadamente…",
+            ["0,22 A", "4,5 A", "220 A"],
+            1,
+            "I = P/V = 1000/220 ≈ 4,55 A.",
+          ],
+        ],
+        kir: [
+          [
+            "En un nodo, la suma de corrientes que entran es…",
+            ["mayor que la que sale", "igual a la que sale", "menor que la que sale"],
+            1,
+            "Conservación de la carga.",
+          ],
+          [
+            "En una malla, ΣV = Σ(I·R) significa que…",
+            [
+              "las subidas de tensión igualan las caídas",
+              "la corriente siempre vale cero",
+              "las resistencias se anulan",
+            ],
+            0,
+            "Conservación de la energía a lo largo de la malla.",
+          ],
+        ],
+      };
+      // --- 5.10 Funciones de la interfaz (calculadora, comprobar, vista) ---
+      function calcHTML(k) {
+        const c = CA[k];
+        return `<div class="card"><h3 style="margin-top:0">Calculadora</h3>${c.f.map((f) => `<label class="lbl">${f[1]} ${f[3] ? `<select id="c_${f[0]}" onchange="cr('${k}')">${f[3].map((o) => `<option value="${o[0]}"${o[0] == f[2] ? " selected" : ""}>${o[1]}</option>`).join("")}</select>` : `<input id="c_${f[0]}" value="${f[2]}" oninput="cr('${k}')" style="width:${f[0] == "R" && k == "circ" ? 220 : 120}px">`}</label>`).join("")}<div id="cres" style="margin-top:10px"></div></div>`;
+      }
+      function cr(k) {
+        const c = CA[k];
+        $("#cres").innerHTML = c.run(c.f.map((f) => $("#c_" + f[0]).value));
+      }
+      function ec() {
+        const t = E.t,
+          v = [...document.querySelectorAll("#ee input")].map((i) => nn(i.value));
+        if (v.some((x) => x == null)) {
+          E.fb = '<div class="fb bad">Escribe un número en cada campo.</div>';
+          return draw(1);
+        }
+        const ok = v.every(
+          (x, i) => Math.abs(x - t.a[i]) <= Math.max(Math.abs(t.a[i]) * 0.01, 1e-9),
+        );
+        E.fb = `<div class="fb ${ok ? "ok" : "bad"}"><b>${ok ? "¡Correcto!" : "Aún no."}</b> ${ok ? "" : "Respuesta: " + t.a.map(fx).join(" ; ")}<ol class="st">${t.s.map((l) => `<li>${l}</li>`).join("")}</ol></div>`;
+        draw(1);
+      }
+      function es() {
+        const t = E.t;
+        E.fb = `<div class="fb ok"><b>Solución: ${t.a.map(fx).join(" ; ")}</b><ol class="st">${t.s.map((l) => `<li>${l}</li>`).join("")}</ol></div>`;
+        draw(1);
+      }
+      function viewE() {
+        const k = E.s,
+          m = EM.find((x) => x[0] == k);
+        if (!E.t && TKS[k]) E.t = TK[pick(TKS[k])]();
+        const z = QZ[k],
+          q = z[E.qi % z.length];
+        return `<div class="pills">${EM.map((x) => `<button class="pill ${x[0] == k ? "a" : ""}" onclick="E.s='${x[0]}';E.t=null;E.fb='';E.qa=null;E.qi=0;draw()">${x[1]}</button>`).join("")}</div>
+<div class="card"><h2>${m[1]}</h2>${m[2].map((p) => `<p>${p}</p>`).join("")}</div>
+${EX[k] ? `<div class="card"><h3 style="margin-top:0">Ejemplos resueltos</h3>${EX[k]()}</div>` : ""}
+${CA[k] ? calcHTML(k) : ""}
+${E.t ? `<div class="card" id="ee"><h3 style="margin-top:0">Ejercicio</h3><p>${E.t.q}</p>${E.t.f.map((l) => `<input aria-label="${l}" placeholder="${l}" inputmode="decimal" autocomplete="off">`).join("")}<p class="lbl">Se acepta un margen del 1 % por redondeo.</p><div><button class="btn" onclick="ec()">Comprobar</button><button class="btn s" onclick="E.t=null;E.fb='';draw()">Otro ejercicio</button><button class="btn s" onclick="es()">Ver solución</button></div>${E.fb}</div>` : ""}
+<div class="card"><h3 style="margin-top:0">Pregunta de teoría</h3><p><b>${q[0]}</b></p>${q[1].map((o, i) => `<button class="btn s" onclick="E.qa=${i};draw(1)">${o}</button>`).join("")}${E.qa != null ? `<div class="fb ${E.qa == q[2] ? "ok" : "bad"}"><b>${E.qa == q[2] ? "¡Correcto!" : "Incorrecto."}</b> ${q[3]}</div>` : ""}<div><button class="btn" onclick="E.qi++;E.qa=null;draw(1)">Otra pregunta</button></div></div>`;
+      }
+
+      /* ==========================================================
+         PANTALLA PRINCIPAL · NAVEGACIÓN Y ARRANQUE
+         draw() dibuja las pestañas y la vista activa; al final se inicia la página.
+         ========================================================== */
+      function draw(keep) {
+        const T = [
+          ["num", "Conversiones y aritmética"],
+          ["gates", "Puertas lógicas"],
+          ["bool", "Álgebra booleana"],
+          ["elec", "Fundamentos de electrónica"],
+        ];
+        $("#nav").innerHTML = T.map(
+          (t) =>
+            `<button class="tab ${st.tab == t[0] ? "a" : ""}" onclick="st.tab='${t[0]}';draw()">${t[1]}</button>`,
+        ).join("");
+        const y = scrollY;
+        $("#app").innerHTML =
+          st.tab == "num"
+            ? viewNum()
+            : st.tab == "gates"
+              ? viewG()
+              : st.tab == "elec"
+                ? viewE()
+                : viewB();
+        if (st.tab == "elec" && CA[E.s]) cr(E.s);
+        if (keep) scrollTo(0, y);
+      }
+      // Inicio
+
+      hero();
+      draw();
+    </script>
+  </body>
+</html>
